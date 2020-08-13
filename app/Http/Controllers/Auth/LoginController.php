@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Socialite;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -56,8 +57,11 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function handleProviderCallback()
+    public function handleProviderCallback(Request $request)
     {
+        if (!$request->has('code') || $request->has('denied')) {
+            return redirect('/');
+        }
         $socialiteUser = Socialite::driver('facebook')->user();
         if($socialiteUser->email) {
             $findUser= User::where('email',$socialiteUser->email)->first();
